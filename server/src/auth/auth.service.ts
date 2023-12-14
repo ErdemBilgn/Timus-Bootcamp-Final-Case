@@ -89,6 +89,46 @@ export class AuthService {
     }
   }
 
+  /* -------------------  LOGOUT LOGIC  -------------------*/
+
+  async logout(userId: string) {
+    try {
+      await this.elasticService.getElasticSearchService().update({
+        index: 'users',
+        id: userId,
+        doc: {
+          hashedRT: null,
+        },
+      });
+    } catch (err) {
+      return err;
+    }
+  }
+
+  /* -------------------  REFRESH TOKENS  -------------------*/
+
+  async refreshTokens(userId: string, rt: string) {
+    try {
+      const user = await this.elasticService.getElasticSearchService().get({
+        index: 'users',
+        id: userId,
+      });
+
+      if (!user) throw new ForbiddenException('Access Denied1');
+
+      const rtMatches = argon.verify(user._source['hashedRT'], rt);
+
+      if (!rtMatches) throw new ForbiddenException('Access Denied2');
+
+      const tokens = await this.signTokens(user._id, user._source['email']);
+      await this.updateRtHash(user._id, tokens.refresh_token);
+
+      return tokens;
+    } catch (err) {
+      return err;
+    }
+  }
+
   /* -------------------  HELPERS  -------------------*/
 
   // hashes the data passed in
@@ -134,7 +174,7 @@ export class AuthService {
       index: 'users',
       id: userId,
       doc: {
-        hashedRt: hash,
+        hashedRT: hash,
       },
     });
   }
