@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { SignUpDto } from './dto';
+import { LoginDto, SignUpDto } from './dto';
 import { ElasticService } from 'src/elastic/elastic.service';
 import * as argon from 'argon2';
 
@@ -34,9 +34,34 @@ export class AuthService {
 
       return result;
     } catch (err) {
-      return err;
+      return err.response;
     }
   }
 
-  signin() {}
+  async login(dto: LoginDto) {
+    try {
+      const result = await this.elasticService
+        .getElasticSearchService()
+        .search({
+          index: 'users',
+          query: { term: { 'email.keyword': { value: dto.email } } },
+        });
+
+      if (result.hits.hits.length === 0) {
+        throw new ForbiddenException('Email is incorrect');
+      }
+      const user = result.hits.hits[0];
+      const pwMatches = await argon.verify(
+        user._source['hashedPass'],
+        dto.password,
+      );
+
+      if (!pwMatches) throw new ForbiddenException('Password is incorrect');
+
+      delete user._source['hashedPass'];
+      return user;
+    } catch (err) {
+      return err.response;
+    }
+  }
 }

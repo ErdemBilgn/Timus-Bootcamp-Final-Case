@@ -33,3 +33,12 @@ export class SignUpDto {
   @IsIn(['admin', 'editor'])
   authority: string;
 }
+
+export class LoginDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
+}
