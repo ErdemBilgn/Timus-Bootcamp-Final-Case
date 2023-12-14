@@ -6,6 +6,9 @@ import * as argon from 'argon2';
 @Injectable()
 export class AuthService {
   constructor(private readonly elasticService: ElasticService) {}
+
+  /* -------------------  SIGNUP LOGIC  -------------------*/
+
   async signup(dto: SignUpDto) {
     try {
       // Check for existing users for the passed email
@@ -18,10 +21,11 @@ export class AuthService {
 
       if (hitUsers.hits.hits.length !== 0)
         throw new ForbiddenException('Credentials taken');
-      // generate the password hash
-      const hash = await argon.hash(dto.password);
-      // save the new user in the db
 
+      // generate the password hash
+      const hash = await this.hashData(dto.password);
+
+      // save the new user in the db
       const result = await this.elasticService.getElasticSearchService().index({
         index: 'users',
         document: {
@@ -37,6 +41,8 @@ export class AuthService {
       return err.response;
     }
   }
+
+  /* -------------------  LOGIN LOGIC  -------------------*/
 
   async login(dto: LoginDto) {
     try {
@@ -63,5 +69,11 @@ export class AuthService {
     } catch (err) {
       return err.response;
     }
+  }
+
+  /* -------------------  HELPERS  -------------------*/
+
+  async hashData(data: string) {
+    return await argon.hash(data);
   }
 }
