@@ -2,14 +2,21 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { LoginDto, SignUpDto } from './dto';
 import { ElasticService } from 'src/elastic/elastic.service';
 import * as argon from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Tokens } from './types/tokens.type';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly elasticService: ElasticService) {}
+  constructor(
+    private readonly elasticService: ElasticService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   /* -------------------  SIGNUP LOGIC  -------------------*/
 
-  async signup(dto: SignUpDto) {
+  async signup(dto: SignUpDto): Promise<Tokens> {
     try {
       // Check for existing users for the passed email
       const hitUsers = await this.elasticService
@@ -31,12 +38,14 @@ export class AuthService {
         document: {
           name: dto.name,
           email: dto.email,
-          hashedPassword: hash,
           authority: dto.authority,
+          hashedPassword: hash,
         },
       });
 
-      return result;
+      const tokens = await this.signTokens(result._id, dto.email);
+      await this.updateRtHash(result._id, tokens.refresh_token);
+      return tokens;
     } catch (err) {
       return err.response;
     }
@@ -57,15 +66,24 @@ export class AuthService {
         throw new ForbiddenException('Email is incorrect');
       }
       const user = result.hits.hits[0];
-      const pwMatches = await argon.verify(
-        user._source['hashedPass'],
+      const passwordMatches = await argon.verify(
+        user._source['hashedPassword'],
         dto.password,
       );
 
-      if (!pwMatches) throw new ForbiddenException('Password is incorrect');
+      if (!passwordMatches) {
+        console.log('error');
+        throw new ForbiddenException('Password is incorrect');
+      }
 
-      delete user._source['hashedPass'];
-      return user;
+      const tokens = await this.signTokens(user._id, dto.email);
+      await this.updateRtHash(user._id, tokens.refresh_token);
+
+      delete user._source['hashedPassword'];
+      return {
+        user,
+        tokens,
+      };
     } catch (err) {
       return err.response;
     }
@@ -73,7 +91,51 @@ export class AuthService {
 
   /* -------------------  HELPERS  -------------------*/
 
+  // hashes the data passed in
   async hashData(data: string) {
     return await argon.hash(data);
+  }
+
+  // Signs an access token and a refresh token and returns them as Tokens type.
+  async signTokens(userId: string, email: string): Promise<Tokens> {
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: this.configService.get('ACCESS_TOKEN_SECRET_KEY'),
+          expiresIn: 15 * 60,
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: this.configService.get('REFRESH_TOKEN_SECRET_KEY'),
+          expiresIn: 60 * 60 * 24 * 7,
+        },
+      ),
+    ]);
+
+    return {
+      access_token: at,
+      refresh_token: rt,
+    };
+  }
+
+  // Hashes the refresh token and saves it in the db.
+  async updateRtHash(userId: string, rt: string) {
+    const hash = await this.hashData(rt);
+    await this.elasticService.getElasticSearchService().update({
+      index: 'users',
+      id: userId,
+      doc: {
+        hashedRt: hash,
+      },
+    });
   }
 }

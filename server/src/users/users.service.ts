@@ -12,7 +12,7 @@ export class UsersService {
           index: 'users',
           query: { match_all: {} },
         });
-      return result.hits;
+      return result.hits.hits;
     } catch (err) {
       return err;
     }
