@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Public } from 'src/common/decorators';
+import { GetCurrentUserId, Public } from 'src/common/decorators';
 
 @Controller('users')
 export class UsersController {
@@ -10,6 +10,11 @@ export class UsersController {
   @Get()
   getAllUsers() {
     return this.userService.getAllUsers();
+  }
+
+  @Get('me')
+  getMe(@GetCurrentUserId() userId: string) {
+    return this.userService.getMe(userId);
   }
 
   @Public()

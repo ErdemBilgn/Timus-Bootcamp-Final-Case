@@ -18,6 +18,18 @@ export class UsersService {
     }
   }
 
+  async getMe(userId: string) {
+    try {
+      const result = await this.elasticService.getElasticSearchService().get({
+        index: 'users',
+        id: userId,
+      });
+      return result;
+    } catch (err) {
+      return err;
+    }
+  }
+
   async deleteSingleUser(id: string) {
     try {
       const result = this.elasticService.getElasticSearchService().delete({
