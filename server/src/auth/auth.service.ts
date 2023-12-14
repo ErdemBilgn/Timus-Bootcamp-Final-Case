@@ -4,7 +4,7 @@ import { ElasticService } from 'src/elastic/elastic.service';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Tokens } from './types/tokens.type';
+import { Tokens } from './types';
 
 @Injectable()
 export class AuthService {
@@ -114,11 +114,12 @@ export class AuthService {
         id: userId,
       });
 
-      if (!user) throw new ForbiddenException('Access Denied1');
+      if (!user || !user._source['hashedRT'])
+        throw new ForbiddenException('Access Denied');
 
-      const rtMatches = argon.verify(user._source['hashedRT'], rt);
+      const rtMatches = await argon.verify(user._source['hashedRT'], rt);
 
-      if (!rtMatches) throw new ForbiddenException('Access Denied2');
+      if (!rtMatches) throw new ForbiddenException('Access Denied');
 
       const tokens = await this.signTokens(user._id, user._source['email']);
       await this.updateRtHash(user._id, tokens.refresh_token);
