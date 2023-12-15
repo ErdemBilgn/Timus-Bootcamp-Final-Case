@@ -6,7 +6,6 @@ import { GetCurrentUserId, Public } from 'src/common/decorators';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @Public()
   @Get()
   getAllUsers() {
     return this.userService.getAllUsers();
@@ -17,9 +16,8 @@ export class UsersController {
     return this.userService.getMe(userId);
   }
 
-  @Public()
-  @Delete(':id')
-  deleteSingleUser(@Param('id') id: string) {
-    return this.userService.deleteSingleUser(id);
+  @Delete('me')
+  deleteSingleUser(@GetCurrentUserId() userId: string) {
+    return this.userService.deleteSingleUser(userId);
   }
 }

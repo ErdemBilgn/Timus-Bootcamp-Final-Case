@@ -43,7 +43,12 @@ export class AuthService {
         },
       });
 
-      const tokens = await this.signTokens(result._id, dto.email);
+      const tokens = await this.signTokens(
+        result._id,
+        dto.name,
+        dto.email,
+        dto.authority,
+      );
       await this.updateRtHash(result._id, tokens.refresh_token);
       return tokens;
     } catch (err) {
@@ -76,7 +81,12 @@ export class AuthService {
         throw new ForbiddenException('Password is incorrect');
       }
 
-      const tokens = await this.signTokens(user._id, dto.email);
+      const tokens = await this.signTokens(
+        user._id,
+        user._source['name'],
+        user._source['email'],
+        user._source['authority'],
+      );
       await this.updateRtHash(user._id, tokens.refresh_token);
 
       delete user._source['hashedPassword'];
@@ -121,7 +131,12 @@ export class AuthService {
 
       if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-      const tokens = await this.signTokens(user._id, user._source['email']);
+      const tokens = await this.signTokens(
+        user._id,
+        user._source['name'],
+        user._source['email'],
+        user._source['authority'],
+      );
       await this.updateRtHash(user._id, tokens.refresh_token);
 
       return tokens;
@@ -138,12 +153,19 @@ export class AuthService {
   }
 
   // Signs an access token and a refresh token and returns them as Tokens type.
-  async signTokens(userId: string, email: string): Promise<Tokens> {
+  async signTokens(
+    userId: string,
+    name: string,
+    email: string,
+    authority: string,
+  ): Promise<Tokens> {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
+          name,
           email,
+          authority,
         },
         {
           secret: this.configService.get('ACCESS_TOKEN_SECRET_KEY'),
@@ -153,7 +175,9 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           sub: userId,
+          name,
           email,
+          authority,
         },
         {
           secret: this.configService.get('REFRESH_TOKEN_SECRET_KEY'),

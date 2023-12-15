@@ -19,7 +19,6 @@ export class FactoryDetailsController {
 
   // GET ALL ROUTE
   @HttpCode(HttpStatus.OK)
-  @Public()
   @Get()
   getAllFactoryDetails() {
     return this.factoryDetailsService.getAllFactoryDetails();
@@ -27,7 +26,6 @@ export class FactoryDetailsController {
 
   // GET ONE BY ID ROUTE
   @HttpCode(HttpStatus.OK)
-  @Public()
   @Get(':id')
   getSingleFactoryDetail(@Param('id') id: number) {
     return this.factoryDetailsService.getSingleFactoryDetail(id);
@@ -35,7 +33,6 @@ export class FactoryDetailsController {
 
   // CREATE ONE ROUTE
   @HttpCode(HttpStatus.CREATED)
-  @Public()
   @Post()
   insertFactoryDetails(@Body() dto: FactoryDetailsDto) {
     return this.factoryDetailsService.insertFactoryDetails(dto);
@@ -43,7 +40,6 @@ export class FactoryDetailsController {
 
   // UPDATE ONE ROUTE
   @HttpCode(HttpStatus.OK)
-  @Public()
   @Put(':id')
   updateSingleFactoryDetail(
     @Param('id') id: number,
@@ -54,21 +50,18 @@ export class FactoryDetailsController {
 
   // DELETE ONE ROUTE
   @HttpCode(HttpStatus.OK)
-  @Public()
   @Delete(':id')
   deleteSingleFactoryDetail(@Param('id') id: number) {
     return this.factoryDetailsService.deleteSıngleFactoryDetail(id);
   }
 
   // GET ALL DETAILS FOR FACTORY BY firm_id
-  @Public()
   @Get('factory-id/:firmId')
   getAllDetailsForFactory(@Param('firmId') firmId: number) {
     return this.factoryDetailsService.getAllDetailsForFactory(firmId);
   }
 
   // DELETE ALL DETAILS FOR FACTORY BY firm_id
-  @Public()
   @Delete('factory-id/:firmId')
   deleteAllDetailsForFactory(@Param('firmId') firmId: number) {
     return this.factoryDetailsService.deleteAllDetalsForFactory(firmId);
