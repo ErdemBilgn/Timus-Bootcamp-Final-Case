@@ -5,6 +5,8 @@ import { ElasticModule } from './elastic/elastic.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
+import { FactoriesModule } from './factories/factories.module';
+import { PostgressModule } from './postgress/postgress.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { AtGuard } from './common/guards';
     AuthModule,
     UsersModule,
     ElasticModule,
+    FactoriesModule,
+    PostgressModule,
   ],
   providers: [
     {
