@@ -1,6 +1,19 @@
-<script setup>
-</script>
 
 <template>
-  <div>Hello Home</div>
+  <div>
+    <h3 v-if="user">HI, {{ user._source.name }}</h3>
+    <h3 v-if="!user">Hello</h3>
+
+  </div>
 </template>
+
+<script>
+export default {
+
+  props: ['user']
+
+}
+</script>
+
+
+

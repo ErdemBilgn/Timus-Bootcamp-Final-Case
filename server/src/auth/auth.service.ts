@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { LoginDto, SignUpDto } from './dto';
 import { ElasticService } from 'src/elastic/elastic.service';
 import * as argon from 'argon2';
@@ -68,7 +73,7 @@ export class AuthService {
         });
 
       if (result.hits.hits.length === 0) {
-        throw new ForbiddenException('Email is incorrect');
+        throw new ForbiddenException(['Email is incorrect']);
       }
       const user = result.hits.hits[0];
       const passwordMatches = await argon.verify(
@@ -77,8 +82,7 @@ export class AuthService {
       );
 
       if (!passwordMatches) {
-        console.log('error');
-        throw new ForbiddenException('Password is incorrect');
+        throw new ForbiddenException(['Password is incorrect']);
       }
 
       const tokens = await this.signTokens(
@@ -95,7 +99,7 @@ export class AuthService {
         tokens,
       };
     } catch (err) {
-      return err.response;
+      throw err;
     }
   }
 
