@@ -41,6 +41,8 @@
 
 <script>
 import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../stores/auth.store';
 
 export default {
   data() {
@@ -54,12 +56,17 @@ export default {
     }
 
   },
+
+  computed: {
+    ...mapStores(useAuthStore)
+  },
+
   methods: {
     load() {
       this.isLoading = true;
       setTimeout(() => {
         this.isLoading = false;
-      }, 3000)
+      }, 2000)
     },
 
     async handleSignup() {
@@ -71,8 +78,7 @@ export default {
           password: this.password
         }
 
-        const result = await axios.post('auth/signup', newUser)
-        console.log(result);
+        await this.authStore.signup(newUser);
         this.$router.push("/")
       } catch (err) {
         this.errorMessages = await err.response.data.message

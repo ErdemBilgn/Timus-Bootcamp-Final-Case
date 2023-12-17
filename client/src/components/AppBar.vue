@@ -46,7 +46,8 @@
 
 <script>
 import { useTheme } from 'vuetify/lib/framework.mjs';
-import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../stores/auth.store';
 
 export default {
   props: ['user'],
@@ -58,7 +59,9 @@ export default {
     }
   },
 
-
+  computed: {
+    ...mapStores(useAuthStore)
+  },
   methods: {
     changeTheme() {
       this.isDarkTheme = !this.isDarkTheme;
@@ -70,8 +73,7 @@ export default {
     },
 
     async handleLogout() {
-      localStorage.removeItem("tokens");
-      await axios.post('auth/logout');
+      await this.authStore.logout();
       this.$router.push('/');
     }
   }

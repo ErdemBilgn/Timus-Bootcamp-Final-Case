@@ -32,24 +32,41 @@
   </v-container>
 </template>
 <script>
+import { useAuthStore } from '@/stores/auth.store';
 import axios from 'axios'
+import { mapStores } from 'pinia';
 
 export default {
+
   data() {
     return {
       email: '',
       password: '',
       remember: false,
       isLoading: false,
-      errorMessages: []
+      errorMessages: [],
     }
   },
+
+  created() {
+    const credentialsJSON = localStorage.getItem("credentials");
+    if (credentialsJSON) {
+      const credentials = JSON.parse(credentialsJSON);
+      this.email = credentials.email,
+        this.password = credentials.password
+    }
+  },
+
+  computed: {
+    ...mapStores(useAuthStore)
+  },
+
   methods: {
     load() {
       this.isLoading = true;
       setTimeout(() => {
         this.isLoading = false;
-      }, 3000)
+      }, 2000)
     },
 
     async handleLogin() {
@@ -58,12 +75,21 @@ export default {
           email: this.email,
           password: this.password,
         }
-        const result = await axios.post("auth/login", data);
-        const tokensJSON = JSON.stringify(result.data.tokens);
-        localStorage.setItem("tokens", tokensJSON);
-        this.$router.push("/")
+        await this.authStore.login(data);
+        this.$router.push("/");
+
+        if (this.remember) {
+          const credentials = {
+            email: this.email,
+            password: this.password
+          }
+          this.authStore.saveUserDataToStorage(credentials);
+        }
+
       } catch (err) {
+        console.log(err)
         this.errorMessages = await err.response.data.message;
+        console.log(err.response.data.message)
       }
 
 

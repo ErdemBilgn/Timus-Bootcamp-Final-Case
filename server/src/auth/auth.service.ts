@@ -32,7 +32,7 @@ export class AuthService {
         });
 
       if (hitUsers.hits.hits.length !== 0)
-        throw new ForbiddenException('Credentials taken');
+        throw new ForbiddenException(['Credentials taken']);
 
       // generate the password hash
       const hash = await this.hashData(dto.password);
@@ -57,7 +57,7 @@ export class AuthService {
       await this.updateRtHash(result._id, tokens.refresh_token);
       return tokens;
     } catch (err) {
-      return err.response;
+      throw err;
     }
   }
 
@@ -115,7 +115,7 @@ export class AuthService {
         },
       });
     } catch (err) {
-      return err;
+      throw err;
     }
   }
 
@@ -145,7 +145,7 @@ export class AuthService {
 
       return tokens;
     } catch (err) {
-      return err;
+      throw err;
     }
   }
 

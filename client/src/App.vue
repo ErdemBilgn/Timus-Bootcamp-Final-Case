@@ -2,16 +2,17 @@
 
 <template>
   <v-app>
-    <app-bar :user="user"></app-bar>
+    <app-bar :user="authStore.authUser"></app-bar>
     <v-main>
-      <RouterView :user="user" />
+      <RouterView :user="authStore.authUser" />
     </v-main>
   </v-app>
 </template>
 
 <script>
 import AppBar from './components/AppBar.vue'
-import axios from 'axios'
+import { useAuthStore } from './stores/auth.store'
+import { mapStores } from 'pinia'
 
 export default {
   components: {
@@ -19,17 +20,14 @@ export default {
   },
   data() {
     return {
-      user: null
+      user: null,
     }
   },
 
-  async created() {
-    const result = await axios.get('users/me')
+  computed: {
+    ...mapStores(useAuthStore),
+  },
 
-    this.user = result.data;
-    console.log(this.user)
-
-  }
 }
 </script>
 
