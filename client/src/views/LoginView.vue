@@ -33,7 +33,6 @@
 </template>
 <script>
 import { useAuthStore } from '@/stores/auth.store';
-import axios from 'axios'
 import { mapStores } from 'pinia';
 
 export default {
@@ -87,9 +86,7 @@ export default {
         }
 
       } catch (err) {
-        console.log(err)
         this.errorMessages = await err.response.data.message;
-        console.log(err.response.data.message)
       }
 
 

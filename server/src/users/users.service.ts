@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UpdateUserDto } from 'src/auth/dto';
 import { ElasticService } from 'src/elastic/elastic.service';
 
 @Injectable()
@@ -27,6 +28,26 @@ export class UsersService {
       return result;
     } catch (err) {
       return err;
+    }
+  }
+
+  async updateMe(userId: string, dto: UpdateUserDto) {
+    try {
+      console.log(dto);
+      const result = await this.elasticService
+        .getElasticSearchService()
+        .update({
+          index: 'users',
+          id: userId,
+          doc: {
+            name: dto.name,
+            email: dto.email,
+            authority: dto.authority,
+          },
+        });
+      return result;
+    } catch (err) {
+      throw err;
     }
   }
 

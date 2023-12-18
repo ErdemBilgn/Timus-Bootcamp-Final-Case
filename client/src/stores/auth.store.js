@@ -16,18 +16,31 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials) {
       try{
         const result = await axios.post('auth/login', credentials);
-        const tokensJSON = JSON.stringify(result.data.tokens);
-        localStorage.setItem("tokens", tokensJSON);
+        const accessTokenJSON = JSON.stringify(result.data.tokens.access_token);
+        const refreshTokenJSON = JSON.stringify(result.data.tokens.refresh_token);
+        localStorage.setItem("access_token", accessTokenJSON);
+        localStorage.setItem("refresh_token", refreshTokenJSON);
         this.authUser = result.data.user;
+        console.log(localStorage.getItem("access_token"));
       }catch(err){
         throw err;
       }
     },
     
     async logout(){
-      await axios.post('auth/logout');
-      this.authUser = null;
-      localStorage.removeItem("tokens");
+      try{
+        await axios.post('auth/logout', {}, {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token"))}`
+          }
+        });
+        this.authUser = null;
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+      }catch(err){
+        throw err;
+      }
+
     },
 
     async signup(newUser){
@@ -38,9 +51,37 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    saveUserDataToStorage(data){
-      const dataJSON = JSON.stringify(data);
+    saveUserDataToStorage(credentials){
+      const dataJSON = JSON.stringify(credentials);
       localStorage.setItem("credentials",dataJSON);
+    },
+
+    async updateProfile(data){
+      try{
+        await axios.put('users/me', data, {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token"))}`
+          }
+        })
+      }catch(err){
+        throw err;
+      }
+    },
+
+    async deleteAccount(){
+      try{
+        await axios.delete('users/me', {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token"))}`
+          }
+        })
+
+        this.authUser = null;
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+      }catch(err){
+        throw err
+      }
     }
   }
 }) 

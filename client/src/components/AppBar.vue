@@ -18,6 +18,11 @@
       <p v-if="user">{{ user._source.name }}</p>
 
 
+      <v-btn to="/profile" v-if="user" class="ml-5" variant="outlined" color="red-darken-3">
+        <span>Profile</span>
+        <v-icon class="ml-1" right icon="mdi-account-circle"></v-icon>
+      </v-btn>
+
       <v-btn v-if="user" @click="handleLogout()" class="ml-5" variant="outlined" color="red-darken-3">
         <span>Logout</span>
         <v-icon class="ml-1" right icon="mdi-logout"></v-icon>
@@ -73,8 +78,12 @@ export default {
     },
 
     async handleLogout() {
-      await this.authStore.logout();
-      this.$router.push('/');
+      try {
+        await this.authStore.logout();
+        this.$router.push('/');
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 }

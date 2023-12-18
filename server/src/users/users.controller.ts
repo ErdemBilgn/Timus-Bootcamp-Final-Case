@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetCurrentUserId, Public } from 'src/common/decorators';
+import { UpdateUserDto } from 'src/auth/dto';
 
 @Controller('users')
 export class UsersController {
@@ -14,6 +15,11 @@ export class UsersController {
   @Get('me')
   getMe(@GetCurrentUserId() userId: string) {
     return this.userService.getMe(userId);
+  }
+
+  @Put('me')
+  updateMe(@GetCurrentUserId() userId: string, @Body() dto: UpdateUserDto) {
+    return this.userService.updateMe(userId, dto);
   }
 
   @Delete('me')

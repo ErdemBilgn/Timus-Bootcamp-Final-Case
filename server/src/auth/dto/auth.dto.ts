@@ -42,3 +42,21 @@ export class LoginDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class UpdateUserDto {
+  @IsNotEmpty()
+  @MinLength(8, { message: 'Name should be at least 8 characters long' })
+  @IsString()
+  @Matches(/^[^\d]+$/, {
+    message: 'name should not contain any numeric values',
+  })
+  name: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsIn(['admin', 'editor'])
+  authority: string;
+}
