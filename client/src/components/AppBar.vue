@@ -56,7 +56,7 @@
 <script>
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import { mapStores } from 'pinia';
-import { useAuthStore } from '../stores/auth.store';
+import { useAuthStore } from '../stores';
 
 export default {
   props: ['user'],

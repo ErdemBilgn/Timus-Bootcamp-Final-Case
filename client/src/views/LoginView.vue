@@ -32,7 +32,7 @@
   </v-container>
 </template>
 <script>
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthStore } from '@/stores';
 import { mapStores } from 'pinia';
 
 export default {

@@ -67,7 +67,7 @@
               </v-dialog>
             </v-toolbar>
           </template>
-          <template v-slot:item.actions="{ item }">
+          <template v-slot:[`item.actions`]="{ item }">
             <v-icon size="small" class="me-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
@@ -85,7 +85,8 @@
   </v-container>
 </template>
 <script>
-import axios from 'axios'
+import { mapStores } from 'pinia'
+import { useFactoriesStore } from '../stores'
 
 export default {
   data: () => ({
@@ -108,22 +109,16 @@ export default {
     editedItem: {
       id: 0,
       firm_name: '',
-      membership_date: "",
-      membership_end_date: "",
-      emplyee_count: null,
-      free_member: null,
-    },
-    defaultItem: {
-      firm_name: '',
       membership_date: '',
-      membership_end_date: "",
-      employee_count: 0,
+      membership_end_date: '',
+      emplyee_count: 0,
       free_member: null,
     },
     errorMessage: ""
   }),
 
   computed: {
+    ...mapStores(useFactoriesStore),
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
@@ -145,17 +140,13 @@ export default {
   methods: {
     async initialize() {
       try {
-        const result = await axios.get("factories", {
-          headers: {
-            Authorization: 'Bearer ' + JSON.parse(localStorage.getItem("access_token"))
-          }
-        })
-        this.factories = result.data;
+        const result = await this.factoriesStore.getAllFactories();
+        this.factories = result
         this.factories = this.factories.map(obj => {
           return {
             ...obj,
             membership_date: this.formatDate(obj.membership_date),
-            membership_end_date: this.formatDate(obj.membership_date)
+            membership_end_date: this.formatDate(obj.membership_end_date)
           }
         })
       } catch (err) {
@@ -167,7 +158,11 @@ export default {
 
     formatDate(inputDate) {
       const dateObj = new Date(inputDate);
-      const formattedDate = dateObj.toISOString().split('T')[0];
+      const year = dateObj.getUTCFullYear();
+      const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getUTCDate() + 1).padStart(2, '0');
+
+      const formattedDate = `${year}-${month}-${day}`;
       return formattedDate;
     },
 
@@ -184,16 +179,10 @@ export default {
     },
 
     async deleteItemConfirm() {
-      //this.factories.splice(this.editedIndex, 1)
       this.closeDelete()
       try {
         const id = this.factories[this.editedIndex].id;
-        await axios.delete(`factories/${id}`, {
-          headers: {
-            Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
-          }
-        })
-
+        this.factoriesStore.deleteFactory(id);
         this.initialize()
       } catch (err) {
         console.log(err)
@@ -219,30 +208,19 @@ export default {
 
     async save() {
       if (this.editedIndex > -1) {
-        //Object.assign(this.factories[this.editedIndex], this.editedItem)
         try {
           this.editedItem.employee_count = parseInt(this.editedItem.employee_count)
-
-          await axios.put(`factories/${this.editedItem.id}`, this.editedItem, {
-            headers: {
-              Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
-            }
-          })
-
+          await this.factoriesStore.updateFactory(this.editedItem.id, this.editedItem)
           this.initialize();
         } catch (err) {
           console.log(err)
-          this.errorMessage = await err.response.data.message
+          this.errorMessage = await err.response.data.message;
         }
       } else {
 
         try {
-          this.editedItem.employee_count = parseInt(this.editedItem.employee_count)
-          await axios.post("factories", this.editedItem, {
-            headers: {
-              Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
-            }
-          });
+          this.editedItem.employee_count = parseInt(this.editedItem.employee_count);
+          await this.factoriesStore.insertFactory(this.editedItem);
           this.initialize()
         } catch (err) {
           this.errorMessage = await err.response.data.message

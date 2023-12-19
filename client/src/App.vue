@@ -11,7 +11,7 @@
 
 <script>
 import AppBar from './components/AppBar.vue'
-import { useAuthStore } from './stores/auth.store'
+import { useAuthStore } from './stores'
 import { mapStores } from 'pinia'
 
 export default {
