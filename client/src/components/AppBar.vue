@@ -17,6 +17,10 @@
 
       <p v-if="user">{{ user._source.name }}</p>
 
+      <v-btn to="/factories" v-if="user" class="ml-5" variant="outlined" color="red-darken-3">
+        <span>Dashboard</span>
+        <v-icon class="ml-1" right icon="mdi-view-dashboard"></v-icon>
+      </v-btn>
 
       <v-btn to="/profile" v-if="user" class="ml-5" variant="outlined" color="red-darken-3">
         <span>Profile</span>

@@ -21,7 +21,6 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem("access_token", accessTokenJSON);
         localStorage.setItem("refresh_token", refreshTokenJSON);
         this.authUser = result.data.user;
-        console.log(localStorage.getItem("access_token"));
       }catch(err){
         throw err;
       }

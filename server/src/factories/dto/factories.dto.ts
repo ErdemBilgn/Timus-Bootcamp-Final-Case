@@ -9,21 +9,21 @@ import {
 export class FactoriesDto {
   @IsNotEmpty()
   @IsString()
-  firmName: string;
+  firm_name: string;
 
   @IsNotEmpty()
   @IsDateString()
-  membershipDate: string;
+  membership_date: string;
 
   @IsNotEmpty()
   @IsDateString()
-  membershipEndDate: string;
+  membership_end_date: string;
 
   @IsNotEmpty()
   @IsNumber()
-  employeeCount: number;
+  employee_count: number;
 
   @IsNotEmpty()
   @IsBoolean()
-  freeMember: boolean;
+  free_member: boolean;
 }

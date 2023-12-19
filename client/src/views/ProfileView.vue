@@ -2,71 +2,75 @@
   <v-container>
     <v-row class="justify-center align-center">
       <v-col cols="5">
-        <p v-for="(error, index) in errorMessages" :key="index" color="red-darken-3">{{ error }}</p>
+        <div v-if="user">
+          <p v-for="(error, index) in errorMessages" :key="index" color="red-darken-3">{{ error }}</p>
+          <v-card class="mx-auto" width="400" prepend-icon="mdi-account-circle">
+            <template v-slot:title>
+              Profilim
+            </template>
 
-        <v-card class="mx-auto" width="400" prepend-icon="mdi-account-circle">
-          <template v-slot:title>
-            Profilim
-          </template>
-
-          <v-card-item>
+            <v-card-item>
 
 
-            <v-form @submit.prevent="handleUpdate">
+              <v-form @submit.prevent="handleUpdate">
 
-              <v-card-text>
-                <v-row class="align-center">
-                  <v-col cols="10">
-                    <v-text-field variant="solo" label="Name" v-bind:disabled="isNameDisable"
-                      v-model="name"></v-text-field>
-                  </v-col>
-                  <v-col cols="2">
-                    <v-btn size="x-small" @click="handleNameClick">
-                      <v-icon icon="mdi-pencil"></v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
+                <v-card-text>
+                  <v-row class="align-center">
+                    <v-col cols="10">
+                      <v-text-field variant="solo" label="Name" v-bind:disabled="isNameDisable"
+                        v-model="name"></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-btn size="x-small" @click="handleNameClick">
+                        <v-icon icon="mdi-pencil"></v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
 
-              <v-card-text>
-                <v-row class="align-center">
-                  <v-col cols="10">
-                    <v-text-field variant="solo" label="Email" v-bind:disabled="isEmailDisable"
-                      v-model="email"></v-text-field>
-                  </v-col>
-                  <v-col cols="2">
-                    <v-btn size="x-small" @click="handleEmailClick">
-                      <v-icon icon="mdi-pencil"></v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
+                <v-card-text>
+                  <v-row class="align-center">
+                    <v-col cols="10">
+                      <v-text-field variant="solo" label="Email" v-bind:disabled="isEmailDisable"
+                        v-model="email"></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-btn size="x-small" @click="handleEmailClick">
+                        <v-icon icon="mdi-pencil"></v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
 
-              <v-card-text>
-                <v-row class="align-center">
-                  <v-col cols="10">
-                    <v-select v-bind:disabled="isAuthorityDisable" v-model="authority" label="Authority"
-                      :items="['admin', 'editor']"></v-select>
-                  </v-col>
-                  <v-col cols="2">
-                    <v-btn size="x-small" @click="handleAuthorityClick">
-                      <v-icon icon="mdi-pencil"></v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
+                <v-card-text>
+                  <v-row class="align-center">
+                    <v-col cols="10">
+                      <v-select v-bind:disabled="isAuthorityDisable" v-model="authority" label="Authority"
+                        :items="['admin', 'editor']"></v-select>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-btn size="x-small" @click="handleAuthorityClick">
+                        <v-icon icon="mdi-pencil"></v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
 
-              <v-btn color="red-darken-3" type="submit" block class="mt-2">
-                <span>Update Profile</span>
-              </v-btn>
+                <v-btn color="red-darken-3" type="submit" block class="mt-2">
+                  <span>Update Profile</span>
+                </v-btn>
 
-              <v-btn @click="handleDelete" color="red-darken-3" type="button" block class="mt-2">
-                <span>Delete Account</span>
-              </v-btn>
-            </v-form>
+                <v-btn @click="handleDelete" color="red-darken-3" type="button" block class="mt-2">
+                  <span>Delete Account</span>
+                </v-btn>
+              </v-form>
 
-          </v-card-item>
-        </v-card>
+            </v-card-item>
+          </v-card>
+        </div>
+        <div v-else>
+          LUTFEN GİRİŞ YAPINIZ
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -98,9 +102,12 @@ export default {
   },
 
   created() {
-    this.name = this.user._source.name,
-      this.email = this.user._source.email,
-      this.authority = this.user._source.authority
+    if (this.user) {
+      this.name = this.user._source.name,
+        this.email = this.user._source.email,
+        this.authority = this.user._source.authority
+    }
+
   },
 
   methods: {

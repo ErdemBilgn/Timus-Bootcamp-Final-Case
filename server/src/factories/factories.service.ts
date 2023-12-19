@@ -6,8 +6,6 @@ import { FactoriesDto } from './dto';
 export class FactoriesService {
   constructor(@Inject('POOL') private readonly pool: Pool) {}
 
-  /*  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  FACTORIES  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
-
   /* GET ALL FACTORIES */
 
   async getAllFactories() {
@@ -45,7 +43,7 @@ export class FactoriesService {
         `
         INSERT INTO factories (firm_name, membership_date, membership_end_date, employee_count, free_member)
         VALUES
-          ('${dto.firmName}','${dto.membershipDate}', '${dto.membershipEndDate}', ${dto.employeeCount}, ${dto.freeMember})
+          ('${dto.firm_name}','${dto.membership_date}', '${dto.membership_end_date}', ${dto.employee_count}, ${dto.free_member})
       `,
       );
       return result;
@@ -60,7 +58,7 @@ export class FactoriesService {
     try {
       const result = await this.pool.query(`
         UPDATE factories
-        SET firm_name = '${dto.firmName}', membership_date = '${dto.membershipDate}', membership_end_date = '${dto.membershipEndDate}', employee_count = ${dto.employeeCount}, free_member = ${dto.freeMember}
+        SET firm_name = '${dto.firm_name}', membership_date = '${dto.membership_date}', membership_end_date = '${dto.membership_end_date}', employee_count = ${dto.employee_count}, free_member = ${dto.free_member}
         WHERE id = ${id}
       `);
 
