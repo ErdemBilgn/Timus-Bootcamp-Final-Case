@@ -2,11 +2,11 @@
   <nav>
     <v-app-bar>
       <template v-slot:prepend>
-        <v-app-bar-nav-icon @click="openDrawer"></v-app-bar-nav-icon>
+        <v-btn icon to="/"><v-icon icon="mdi-home" size="large"></v-icon></v-btn>
       </template>
 
       <v-app-bar-title>
-        <span class="font-weight-light">EnergySa</span>
+        <span>EnergySa</span>
       </v-app-bar-title>
 
       <v-spacer></v-spacer>
@@ -23,23 +23,23 @@
       </v-btn>
 
       <v-btn to="/profile" v-if="user" class="ml-5" variant="outlined" color="red-darken-3">
-        <span>Profile</span>
+        <span>Profilim</span>
         <v-icon class="ml-1" right icon="mdi-account-circle"></v-icon>
       </v-btn>
 
       <v-btn v-if="user" @click="handleLogout()" class="ml-5" variant="outlined" color="red-darken-3">
-        <span>Logout</span>
+        <span>Çıkış yap</span>
         <v-icon class="ml-1" right icon="mdi-logout"></v-icon>
       </v-btn>
 
 
       <v-btn v-if="!user" class="ml-5" to="/login" variant="outlined" color="red-darken-3">
-        <span>Login</span>
+        <span>Giriş Yap</span>
         <v-icon class="ml-1" right icon="mdi-login"></v-icon>
       </v-btn>
 
       <v-btn v-if="!user" class="ml-5" to="/signup" variant="outlined" color="red-darken-3">
-        <span>Sign Up</span>
+        <span>Kayıt Ol</span>
         <v-icon class="ml-1" right icon="mdi-account-plus"></v-icon>
       </v-btn>
 
@@ -64,7 +64,6 @@ export default {
     return {
       isDarkTheme: true,
       theme: useTheme(),
-      drawer: false,
     }
   },
 
@@ -75,10 +74,6 @@ export default {
     changeTheme() {
       this.isDarkTheme = !this.isDarkTheme;
       this.theme.global.name = this.isDarkTheme ? "dark" : "light";
-    },
-
-    openDrawer() {
-      this.drawer = !this.drawer;
     },
 
     async handleLogout() {

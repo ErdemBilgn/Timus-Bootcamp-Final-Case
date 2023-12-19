@@ -1,5 +1,3 @@
-
-
 <template>
   <v-app>
     <app-bar :user="authStore.authUser"></app-bar>
@@ -27,6 +25,23 @@ export default {
   computed: {
     ...mapStores(useAuthStore),
   },
+
+  async created() {
+
+    try {
+      await this.authStore.refreshTokens();
+    } catch {
+      localStorage.removeItem("user");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+    }
+
+    setInterval(async () => {
+      await this.authStore.checkTokenExpiration();
+    }, 1 * 60 * 1000)
+
+
+  }
 
 }
 </script>

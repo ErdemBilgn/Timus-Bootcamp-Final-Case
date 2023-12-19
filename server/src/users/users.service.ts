@@ -33,7 +33,6 @@ export class UsersService {
 
   async updateMe(userId: string, dto: UpdateUserDto) {
     try {
-      console.log(dto);
       const result = await this.elasticService
         .getElasticSearchService()
         .update({

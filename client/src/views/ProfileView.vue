@@ -132,11 +132,11 @@ export default {
         }
 
         await this.authStore.updateProfile(updatedUser)
-        await this.authStore.logout()
 
         this.$router.push("/")
 
       } catch (err) {
+        console.log(err)
         this.errorMessages = await err.response.data.message;
 
       }

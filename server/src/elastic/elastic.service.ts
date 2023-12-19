@@ -11,6 +11,5 @@ export class ElasticService {
 
   async createIndice(indexName) {
     this.elasticsearchService.indices.create({ index: indexName });
-    console.log('index created');
   }
 }

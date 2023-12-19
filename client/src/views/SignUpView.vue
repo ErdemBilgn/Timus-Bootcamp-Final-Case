@@ -9,15 +9,15 @@
         <p v-for="(error, index) in errorMessages" :key="index" color="red-darken-3">{{ error }}</p>
 
         <v-card class="pa-4">
-          <v-card-title class="text-center">Sing Up Here</v-card-title>
+          <v-card-title class="text-center">Kaydol</v-card-title>
           <v-card-item>
             <v-form @submit.prevent="handleSignup()">
-              <v-text-field prepend-inner-icon="" variant="solo" v-model="name" label="Name"></v-text-field>
+              <v-text-field prepend-inner-icon="" variant="solo" v-model="name" label="İsim"></v-text-field>
 
               <v-text-field prepend-inner-icon="mdi-email" variant="solo" v-model="email" label="Email"></v-text-field>
 
               <v-text-field type="password" prepend-inner-icon="mdi-lock" variant="solo" v-model="password"
-                label="Password"></v-text-field>
+                label="Parola"></v-text-field>
 
               <v-radio-group inline v-model="authority">
                 <v-radio color="red-darken-3" label="Admin" value="admin"></v-radio>
@@ -25,7 +25,7 @@
               </v-radio-group>
 
               <v-btn @click="load()" color="red-darken-3" type="submit" block class="mt-2">
-                <span>Submit</span>
+                <span>Kayıt Ol</span>
 
               </v-btn>
             </v-form>

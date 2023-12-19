@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useAuthStore } from './auth.store'
 
 export const useFactoriesStore = defineStore("factories", {
   actions: {
@@ -10,6 +11,7 @@ export const useFactoriesStore = defineStore("factories", {
             Authorization: 'Bearer ' + JSON.parse(localStorage.getItem("access_token"))
           }
         })
+        await useAuthStore().refreshTokens();
         return result.data;
       }catch(err){
         throw err;
@@ -23,6 +25,8 @@ export const useFactoriesStore = defineStore("factories", {
             Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
           }
         });
+
+        await useAuthStore().refreshTokens();
       }catch(err){
         throw err;
       }
@@ -36,6 +40,9 @@ export const useFactoriesStore = defineStore("factories", {
             Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
           }
         })
+
+        await useAuthStore().refreshTokens();
+
       }catch(err){
         throw err;
       }
@@ -48,6 +55,8 @@ export const useFactoriesStore = defineStore("factories", {
             Authorization: "Bearer " + JSON.parse(localStorage.getItem("access_token"))
           }
         })
+
+        await useAuthStore().refreshTokens();
       }catch(err){
         throw err
       }

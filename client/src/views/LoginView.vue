@@ -7,24 +7,25 @@
         </v-overlay>
         <p v-for="(error, index) in errorMessages" :key="index" color="red-darken-3">{{ error }}</p>
         <v-card class="pa-4">
-          <v-card-title class="text-center">Login Here</v-card-title>
+          <v-card-title class="text-center">Giriş
+            Yapın</v-card-title>
           <v-card-item>
             <v-form @submit.prevent="handleLogin()">
               <v-text-field prepend-inner-icon="mdi-email" variant="solo" v-model="email" label="Email"></v-text-field>
 
               <v-text-field type="password" prepend-inner-icon="mdi-lock" variant="solo" v-model="password"
-                label="Password"></v-text-field>
+                label="Parola"></v-text-field>
 
-              <v-checkbox v-model="remember" label="Remember me" color="red" hide-details></v-checkbox>
+              <v-checkbox v-model="remember" label="Beni Hatırla" color="red" hide-details></v-checkbox>
 
               <v-btn @click="load()" color="red-darken-3" type="submit" block class="mt-2">
-                <span>Submit</span>
+                <span>Giriş Yap</span>
 
               </v-btn>
             </v-form>
           </v-card-item>
           <v-card-actions>
-            <v-btn block type="submit" to="/signup" color="red-darken-3">Register</v-btn>
+            <v-btn block type="submit" to="/signup" color="red-darken-3">Kayıt Ol</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

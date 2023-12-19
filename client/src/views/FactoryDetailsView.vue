@@ -2,10 +2,14 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-data-table :headers="headers" :items="factoryDetails">
+        <v-data-table v-if="user" :headers="headers" :items="factoryDetails">
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>{{ firmName }}</v-toolbar-title>
+              <v-toolbar-title>
+                <v-btn to="/factories" icon><v-icon icon="mdi-arrow-left-circle" size="large"></v-icon></v-btn>
+                <span>{{ firmName }}</span>
+
+              </v-toolbar-title>
               <v-divider class="mx-4" inset vertical></v-divider>
               <v-spacer></v-spacer>
               <v-dialog v-model="dialog" max-width="500px">
@@ -78,7 +82,9 @@
             </v-icon>
           </template>
         </v-data-table>
-        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <div v-else>Lütfen Giriş Yapınız</div>
+
+        <p v-if="errorMessage && user">{{ errorMessage }}</p>
       </v-col>
     </v-row>
   </v-container>
@@ -89,6 +95,7 @@ import { useFactoriesStore } from '../stores'
 import { useFactoryDetailsStore } from '../stores'
 
 export default {
+  props: ['user'],
   data: () => ({
     dialog: false,
     dialogDelete: false,

@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-data-table :headers="headers" :items="factories">
+        <v-data-table v-if="user" :headers="headers" :items="factories">
           <template v-slot:top>
             <v-toolbar flat>
               <v-toolbar-title>FABRİKALARIM</v-toolbar-title>
@@ -80,7 +80,8 @@
             </v-btn>
           </template>
         </v-data-table>
-        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <div v-else>Lütfen Giriş Yapınız</div>
+        <p v-if="errorMessage && user">{{ errorMessage }}</p>
       </v-col>
     </v-row>
   </v-container>
@@ -91,6 +92,7 @@ import { useFactoriesStore } from '../stores'
 import { useFactoryDetailsStore } from '../stores'
 
 export default {
+  props: ['user'],
   data: () => ({
     dialog: false,
     dialogDelete: false,

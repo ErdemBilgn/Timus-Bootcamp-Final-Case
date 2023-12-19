@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import axios from 'axios'
+import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
 
 export const useAuthStore = defineStore('auth', {
   state: () => {
     return {
-      authUser: null,
+      authUser: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
     }
   },
   getters: {
@@ -18,11 +19,53 @@ export const useAuthStore = defineStore('auth', {
         const result = await axios.post('auth/login', credentials);
         const accessTokenJSON = JSON.stringify(result.data.tokens.access_token);
         const refreshTokenJSON = JSON.stringify(result.data.tokens.refresh_token);
+        const userJSON = JSON.stringify(result.data.user);
         localStorage.setItem("access_token", accessTokenJSON);
         localStorage.setItem("refresh_token", refreshTokenJSON);
+        localStorage.setItem("user", userJSON);
         this.authUser = result.data.user;
       }catch(err){
         throw err;
+      }
+    },
+
+    async checkTokenExpiration() {
+      const accessToken = JSON.parse(localStorage.getItem("access_token"));
+      const refreshToken = JSON.parse(localStorage.getItem("refresh_token"));
+
+      if(accessToken && refreshToken){
+        const accessTokenExp = jwtDecode(accessToken).exp * 1000
+        const currentTime = new Date().getTime();
+
+        if(currentTime > accessTokenExp){
+          //Access Token Expired.
+          //Refresh Tokens
+          try{
+            await this.refreshTokens();
+          }catch(err){
+            throw err
+          }
+        }
+      }
+    },
+
+    async refreshTokens(){
+      try{
+        const result = await axios.post("auth/refresh", {}, {
+          headers: {
+            Authorization: "Bearer " + JSON.parse(localStorage.getItem("refresh_token"))
+          }
+        })
+
+        const accessTokenJSON = JSON.stringify(result.data.access_token);
+        const refreshTokenJSON = JSON.stringify(result.data.refresh_token);
+        localStorage.setItem("access_token", accessTokenJSON);
+        localStorage.setItem("refresh_token", refreshTokenJSON);
+      }catch(err){
+        this.authUser = null
+        localStorage.removeItem("user");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
       }
     },
     
@@ -36,6 +79,7 @@ export const useAuthStore = defineStore('auth', {
         this.authUser = null;
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
       }catch(err){
         throw err;
       }
@@ -57,11 +101,20 @@ export const useAuthStore = defineStore('auth', {
 
     async updateProfile(data){
       try{
+        let result = null
         await axios.put('users/me', data, {
           headers: {
             Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token"))}`
           }
+        }),
+        
+        result = await axios.get('users/me', {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token"))}`
+          }
         })
+        this.authUser = result.data;
+        await this.refreshTokens();
       }catch(err){
         throw err;
       }
@@ -76,6 +129,7 @@ export const useAuthStore = defineStore('auth', {
         })
 
         this.authUser = null;
+        localStorage.removeItem("user");
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
       }catch(err){
