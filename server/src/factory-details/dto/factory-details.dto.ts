@@ -9,7 +9,7 @@ import {
 export class FactoryDetailsDto {
   @IsNotEmpty()
   @IsNumber()
-  firmId: number;
+  firm_id: number;
 
   @IsNotEmpty()
   @IsString()
@@ -17,21 +17,21 @@ export class FactoryDetailsDto {
 
   @IsNotEmpty()
   @IsDateString()
-  startDate: string;
+  start_date: string;
 
   @IsNotEmpty()
   @IsDateString()
-  endDate: string;
+  end_date: string;
 
   @IsNotEmpty()
   @IsNumber()
-  usageKw: number;
+  usage_kw: number;
 
   @IsNotEmpty()
   @IsNumber()
-  usagePrice: number;
+  usage_price: number;
 
   @IsNotEmpty()
   @IsBoolean()
-  discountedPrice: boolean;
+  discounted_price: boolean;
 }

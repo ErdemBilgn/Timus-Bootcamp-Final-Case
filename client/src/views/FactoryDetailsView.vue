@@ -2,16 +2,16 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-data-table :headers="headers" :items="factories">
+        <v-data-table :headers="headers" :items="factoryDetails">
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>FABRİKALARIM</v-toolbar-title>
+              <v-toolbar-title>{{ firmName }}</v-toolbar-title>
               <v-divider class="mx-4" inset vertical></v-divider>
               <v-spacer></v-spacer>
               <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ props }">
                   <v-btn color="red-darken-4" variant="outlined" dark v-bind="props">
-                    Yeni Fabrika
+                    Yeni Detay
                   </v-btn>
                 </template>
                 <v-card>
@@ -23,21 +23,23 @@
                     <v-container>
                       <v-row>
                         <v-col cols="12" sm="6" md="4">
-                          <v-text-field v-model="editedItem.firm_name" label="Firma Adı"></v-text-field>
+                          <v-text-field v-model="editedItem.unit" label="Kullanılan Birim"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                          <v-text-field v-model="editedItem.membership_date" label="Üyelik Tarihi"></v-text-field>
+                          <v-text-field v-model="editedItem.start_date" label="Başlangıç Tarihi"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                          <v-text-field v-model="editedItem.membership_end_date"
-                            label="Üyelik Bitiş Tarihi"></v-text-field>
+                          <v-text-field v-model="editedItem.end_date" label="Bitiş Tarihi"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                          <v-text-field v-model="editedItem.employee_count" type="number"
-                            label="Çalışan Sayısı"></v-text-field>
+                          <v-text-field v-model="editedItem.usage_kw" type="number" label="Kullanım(kw)"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                          <v-checkbox v-model="editedItem.free_member" label="Ücretsiz Üye"></v-checkbox>
+                          <v-text-field v-model="editedItem.usage_price" type="number"
+                            label="Kullanım Bedeli"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-checkbox v-model="editedItem.discounted_price" label="İndirimli Fiyat"></v-checkbox>
                         </v-col>
                       </v-row>
                     </v-container>
@@ -74,10 +76,6 @@
             <v-icon size="small" @click="deleteItem(item)">
               mdi-delete
             </v-icon>
-            <v-btn variant="outlined" class="ml-2" size="small"
-              :to="{ name: 'factoryDetails', params: { id: item.id }, query: { firm_name: item.firm_name } }">
-              Detay
-            </v-btn>
           </template>
         </v-data-table>
         <p v-if="errorMessage">{{ errorMessage }}</p>
@@ -96,42 +94,54 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        title: 'Firma Adı',
+        title: 'Kullanılan Birim',
         align: 'start',
-        key: 'firm_name',
+        key: 'unit',
       },
-      { title: 'Üyelik Tarihi', key: 'membership_date' },
-      { title: 'Üyelik Bitiş Tarihi', key: 'membership_end_date' },
-      { title: 'Çalışan Sayısı', key: 'employee_count' },
-      { title: 'Ücretsiz Üye', key: 'free_member' },
+      { title: 'Tarih Aralığı', key: 'date_range' },
+      { title: 'Kullanım(kw)', key: 'usage_kw' },
+      { title: 'Kullanım Bedeli', key: 'usage_price' },
+      { title: 'İndirimli Fiyat', key: 'discounted_price' },
       { title: 'Actions', key: 'actions', sortable: false },
     ],
-    factories: [],
+    factoryDetails: [],
     editedIndex: -1,
     editedItem: {
       id: 0,
-      firm_name: '',
-      membership_date: '',
-      membership_end_date: '',
-      emplyee_count: 0,
-      free_member: false,
+      firm_id: 0,
+      unit: '',
+      start_date: '',
+      end_date: '',
+      usage_kw: 0,
+      usage_price: 0,
+      discounted_price: false
     },
     defaultItem: {
       id: 0,
-      firm_name: '',
-      membership_date: '',
-      membership_end_date: '',
-      emplyee_count: 0,
-      free_member: false,
+      firm_id: 0,
+      unit: '',
+      start_date: '',
+      end_date: '',
+      usage_kw: 0,
+      usage_price: 0,
+      discounted_price: false
     },
     errorMessage: ""
   }),
 
   computed: {
-    ...mapStores(useFactoriesStore, useFactoryDetailsStore),
+    ...mapStores(useFactoriesStore),
+    ...mapStores(useFactoryDetailsStore),
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
+
+    firmId() {
+      return this.$route.params.id;
+    },
+    firmName() {
+      return this.$route.query.firm_name
+    }
   },
 
   watch: {
@@ -150,13 +160,13 @@ export default {
   methods: {
     async initialize() {
       try {
-        const result = await this.factoriesStore.getAllFactories();
-        this.factories = result
-        this.factories = this.factories.map(obj => {
+        const result = await this.factoryDetailsStore.getAllDetailsForFactory(this.firmId)
+        this.factoryDetails = result
+        this.factoryDetails = this.factoryDetails.map(obj => {
           return {
             ...obj,
-            membership_date: this.formatDate(obj.membership_date),
-            membership_end_date: this.formatDate(obj.membership_end_date)
+            date_range: this.formatDateRange(obj.date_range),
+
           }
         })
       } catch (err) {
@@ -166,24 +176,27 @@ export default {
 
     },
 
-    formatDate(inputDate) {
-      const dateObj = new Date(inputDate);
-      const year = dateObj.getUTCFullYear();
-      const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getUTCDate() + 1).padStart(2, '0');
-
-      const formattedDate = `${year}-${month}-${day}`;
+    formatDateRange(inputDate) {
+      const formattedDate = inputDate.replace('[', '(');
       return formattedDate;
     },
 
     editItem(item) {
-      this.editedIndex = this.factories.indexOf(item)
+      this.editedIndex = this.factoryDetails.indexOf(item)
       this.editedItem = Object.assign({}, item)
+      this.editedItem.start_date = this.extractDatesFromDateRange(item.date_range)[0];
+      this.editedItem.end_date = this.extractDatesFromDateRange(item.date_range)[1];
       this.dialog = true
     },
 
+    extractDatesFromDateRange(inputDate) {
+      const rawDate = inputDate.slice(1, -1);
+      const dateArr = rawDate.split(",");
+      return dateArr;
+    },
+
     deleteItem(item) {
-      this.editedIndex = this.factories.indexOf(item)
+      this.editedIndex = this.factoryDetails.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
@@ -191,13 +204,11 @@ export default {
     async deleteItemConfirm() {
       this.closeDelete()
       try {
-        const id = this.factories[this.editedIndex].id;
-        await this.factoriesStore.deleteFactory(id);
-        await this.factoryDetailsStore.deleteAllFactoryDetails(id);
+        const id = this.factoryDetails[this.editedIndex].id;
+        await this.factoryDetailsStore.deleteSinlgeFactoryDetails(id);
         this.initialize()
       } catch (err) {
-        console.log(err)
-        this.errorMessage = err.response
+        this.errorMessage = err.response;
       }
     },
 
@@ -220,18 +231,22 @@ export default {
     async save() {
       if (this.editedIndex > -1) {
         try {
-          this.editedItem.employee_count = parseInt(this.editedItem.employee_count)
-          await this.factoriesStore.updateFactory(this.editedItem.id, this.editedItem)
+          this.editedItem.firm_id = parseInt(this.firmId);
+          this.editedItem.usage_kw = parseInt(this.editedItem.usage_kw);
+          this.editedItem.usage_price = parseInt(this.editedItem.usage_price);
+          await this.factoryDetailsStore.updateFactoryDetails(this.editedItem.id, this.editedItem)
           this.initialize();
         } catch (err) {
-          console.log(err)
           this.errorMessage = await err.response.data.message;
         }
       } else {
 
         try {
-          this.editedItem.employee_count = parseInt(this.editedItem.employee_count);
-          await this.factoriesStore.insertFactory(this.editedItem);
+          this.editedItem.firm_id = parseInt(this.firmId);
+          this.editedItem.usage_kw = parseInt(this.editedItem.usage_kw);
+          this.editedItem.usage_price = parseInt(this.editedItem.usage_price);
+          console.log(this.editedItem)
+          await this.factoryDetailsStore.insertDetails(this.editedItem);
           this.initialize()
         } catch (err) {
           this.errorMessage = await err.response.data.message

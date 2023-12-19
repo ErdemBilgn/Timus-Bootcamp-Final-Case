@@ -41,7 +41,7 @@ export class FactoryDetailsService {
         `
         INSERT INTO factoryDetails (firm_id, unit, date_range, usage_kw, usage_price, discounted_price)
         VALUES
-          (${dto.firmId},'${dto.unit}','(${dto.startDate}, ${dto.endDate})', ${dto.usageKw}, ${dto.usagePrice}, ${dto.discountedPrice})
+          (${dto.firm_id},'${dto.unit}','(${dto.start_date}, ${dto.end_date})', ${dto.usage_kw}, ${dto.usage_price}, ${dto.discounted_price})
       `,
       );
 
@@ -57,7 +57,7 @@ export class FactoryDetailsService {
     try {
       const result = await this.pool.query(`
         UPDATE factoryDetails
-        SET unit = '${dto.unit}', date_range = '(${dto.startDate}, ${dto.endDate})', usage_kw = ${dto.usageKw}, usage_price = ${dto.usagePrice}, discounted_price = ${dto.discountedPrice}
+        SET unit = '${dto.unit}', date_range = '(${dto.start_date}, ${dto.end_date})', usage_kw = ${dto.usage_kw}, usage_price = ${dto.usage_price}, discounted_price = ${dto.discounted_price}
         WHERE id = ${id}
       `);
 
