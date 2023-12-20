@@ -194,8 +194,9 @@ export default {
       this.closeDelete()
       try {
         const id = this.factories[this.editedIndex].id;
-        await this.factoriesStore.deleteFactory(id);
         await this.factoryDetailsStore.deleteAllFactoryDetails(id);
+
+        await this.factoriesStore.deleteFactory(id);
         this.initialize()
       } catch (err) {
         console.log(err)

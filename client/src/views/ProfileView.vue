@@ -1,10 +1,10 @@
 <template>
-  <v-container>
-    <v-row class="justify-center align-center">
-      <v-col cols="5">
+  <v-container class="containerr">
+    <v-row class="justify-center align-center roww">
+      <v-col lg="4" md="8" sm="12">
         <div v-if="user">
           <p v-for="(error, index) in errorMessages" :key="index" color="red-darken-3">{{ error }}</p>
-          <v-card class="mx-auto" width="400" prepend-icon="mdi-account-circle">
+          <v-card class="w-100" prepend-icon="mdi-account-circle">
             <template v-slot:title>
               Profilim
             </template>
@@ -156,3 +156,13 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.containerr {
+  height: 90vh;
+}
+
+.roww {
+  height: 90%;
+}
+</style>

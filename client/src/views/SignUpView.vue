@@ -2,7 +2,7 @@
   <v-container class="containerr" fluid>
     <v-row class="justify-center align-center roww">
 
-      <v-col cols="4">
+      <v-col lg="3" sm="12" md="6">
         <v-overlay :model-value="isLoading" class="align-center justify-center">
           <v-progress-circular v-show="isLoading" indeterminate color="white"></v-progress-circular>
         </v-overlay>
@@ -66,7 +66,7 @@ export default {
       this.isLoading = true;
       setTimeout(() => {
         this.isLoading = false;
-      }, 2000)
+      }, 500)
     },
 
     async handleSignup() {
@@ -96,10 +96,10 @@ export default {
 }
 
 .containerr {
-  height: 100vh;
+  height: 90vh;
 }
 
 .roww {
-  height: 80%;
+  height: 90%;
 }
 </style>

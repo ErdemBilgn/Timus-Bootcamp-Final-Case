@@ -252,7 +252,6 @@ export default {
           this.editedItem.firm_id = parseInt(this.firmId);
           this.editedItem.usage_kw = parseInt(this.editedItem.usage_kw);
           this.editedItem.usage_price = parseInt(this.editedItem.usage_price);
-          console.log(this.editedItem)
           await this.factoryDetailsStore.insertDetails(this.editedItem);
           this.initialize()
         } catch (err) {
