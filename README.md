@@ -44,7 +44,7 @@ bilgiler tam olmadığı sürece kayıt yapılmayacak ve hata mesajı verecektir
 
 #### Kullanıcı Giriş
 
-![loginPage](img/LoginScreen.PNG)
+![loginPage](img/LoginPage.PNG)
 
 ● Kullanıcı giriş yaptıktan sonra profil ayarlarına ve dashboardlara erişebilecektir.
 
