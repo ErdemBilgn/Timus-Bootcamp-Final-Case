@@ -57,11 +57,11 @@
                 </v-card-text>
 
                 <v-btn color="red-darken-3" type="submit" block class="mt-2">
-                  <span>Update Profile</span>
+                  <span>Profilimi güncelle</span>
                 </v-btn>
 
                 <v-btn @click="handleDelete" color="red-darken-3" type="button" block class="mt-2">
-                  <span>Delete Account</span>
+                  <span>Hesabımı Sil</span>
                 </v-btn>
               </v-form>
 
